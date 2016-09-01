@@ -1,0 +1,42 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  <title>JSON.simple</title>
+
+  <link rel="stylesheet" href="style.css"/>
+  <style></style>
+
+  <script src="script.js"></script>
+  <script></script>
+</head>
+
+<body>
+  <div>
+    Download the JSON.simple 2.0.0 <a href="target/json-simple-2.0.0.jar">jar</a>, <a href="target/json-simple-2.0.0-javadoc.jar">javadocs</a>, and <a href="target/json-simple-2.0.0-sources.jar">source</a>.
+  </div>
+  <div>
+    Usage:
+<pre>
+/* Quickly serialize stuff in json-simple: */
+Object stuff = null;            
+String serialized = Jsoner.serialize(stuff);
+/* Deserialize stuff in json-simple by handling a DeserializationException: */
+try{
+    Object deserialized = Jsoner.deserialize(serialized);
+}catch(DeserializationException caught){
+    /* Oops bad JSON. */
+}
+/* When you know you only want a JsonObject or an empty one if it fails: */
+JsonObject deserializedObject = Jsoner.deserializeJsonObject(serialized, new JsonObject());
+/* When you know you only want a JsonArray or an empty one if it fails: */
+JsonArray deserializedArray = Jsoner.deserializeJsonArray(serialized, new JsonArray());
+/* When you want it to look pretty: */
+String prettyPrinted = Jsoner.prettyPrint(serialized);
+</pre>
+  </div>
+  <div>
+    View the JSON.simple 2.0.0 javadocs <a href="target/apidocs/index.html">here</a>.
+  </div>
+</body>
+</html>

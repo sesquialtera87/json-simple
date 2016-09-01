@@ -1,0 +1,12 @@
+bin
+src
+.project
+.classpath
+.metadata
+.settings
+*.log
+*.java~
+*.xml
+target/test-classes
+target/surefire*
+target/classes
