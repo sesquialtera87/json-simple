@@ -38,10 +38,10 @@ try{
 }
 
 /* When you know you only want a JsonObject or an empty one if it fails: */
-JsonObject deserializedObject = Jsoner.deserializeJsonObject(serialized, new JsonObject());
+JsonObject deserializedObject = Jsoner.deserialize(serialized, new JsonObject());
 
 /* When you know you only want a JsonArray or an empty one if it fails: */
-JsonArray deserializedArray = Jsoner.deserializeJsonArray(serialized, new JsonArray());
+JsonArray deserializedArray = Jsoner.deserialize(serialized, new JsonArray());
 
 /* When you want it to look pretty: */
 String prettyPrinted = Jsoner.prettyPrint(serialized);
