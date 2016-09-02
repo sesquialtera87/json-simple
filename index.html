@@ -26,7 +26,7 @@
   <div>
     Usage:<br />
 <pre class="prettyprint lang-java">
-/* Quickly serialize stuff in json-simple: */
+/* Quickly serialize stuff in json-simple (will throw IllegalArgumentException if stuff cannot be serialized into JSON): */
 Object stuff = null;            
 String serialized = Jsoner.serialize(stuff);
 
