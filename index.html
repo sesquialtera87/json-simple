@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="style.css"/>
   <style></style>
 
-  <script src="script.js"></script>
+  <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
   <script></script>
 </head>
 
@@ -15,7 +15,7 @@
   <div>
     Download the JSON.simple 2.0.0 release <a href="target/json-simple-2.0.0.jar">jar</a>, <a href="target/json-simple-2.0.0-javadoc.jar">javadocs</a>, and <a href="target/json-simple-2.0.0-sources.jar">source</a>.<br />
     As a maven dependency in a java 7+ project:<br />
-<pre>
+<pre class="prettyprint lang-xml">
 &lt;dependency&gt;
     &lt;groupId&gt;org.json&lt;/groupId&gt;
     &lt;artifactId&gt;json-simple&lt;/artifactId&gt;
@@ -25,7 +25,7 @@
   </div>
   <div>
     Usage:<br />
-<pre>
+<pre class="prettyprint lang-java">
 /* Quickly serialize stuff in json-simple: */
 Object stuff = null;            
 String serialized = Jsoner.serialize(stuff);
