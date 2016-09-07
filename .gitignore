@@ -10,3 +10,8 @@ src
 target/test-classes
 target/surefire*
 target/classes
+target/checkout
+target/generated-classes
+target/classes
+target/maven-archiver
+target/javadoc-bundle-options
