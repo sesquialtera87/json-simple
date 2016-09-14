@@ -10,31 +10,31 @@
   <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
   <script></script>
 </head>
-<!-- Insignificant change to see if I can get gh-pages to update. -->
 <body>
   <div>
-    Download the JSON.simple 2.0.0 release <a href="target/json-simple-2.0.0.jar">jar</a>, <a href="target/json-simple-2.0.0-javadoc.jar">javadocs</a>, and <a href="target/json-simple-2.0.0-sources.jar">source</a>.<br />
+    Download the JSON.simple 2.1.0 release <a href="target/json-simple-2.1.0.jar">jar</a>, <a href="target/json-simple-2.1.0-javadoc.jar">javadocs</a>, and <a href="target/json-simple-2.1.0-sources.jar">source</a>.<br />
     As a maven dependency in a java 7+ project:<br />
 <pre class="prettyprint lang-xml">
 &lt;dependency&gt;
     &lt;groupId&gt;com.github.cliftonlabs&lt;/groupId&gt;
     &lt;artifactId&gt;json-simple&lt;/artifactId&gt;
-    &lt;version&gt;2.0.0&lt;/version&gt;
+    &lt;version&gt;2.1.0&lt;/version&gt;
 &lt;/dependency&gt;
 </pre>
   </div>
   <div>
-    Usage:<br />
+    Try it out:<br />
 <pre class="prettyprint lang-java">
-/* Quickly serialize stuff in json-simple (will throw IllegalArgumentException if stuff cannot be serialized into JSON): */
+/* Quickly serialize stuff in JSON.simple: */
 Object stuff = null;            
 String serialized = Jsoner.serialize(stuff);
 
-/* Deserialize stuff in json-simple by handling a DeserializationException: */
+/* Deserialize stuff in JSON.simple by handling a DeserializationException: */
+Object deserialized = -1;
 try{
-    Object deserialized = Jsoner.deserialize(serialized);
+    deserialized = Jsoner.deserialize(serialized);
 }catch(DeserializationException caught){
-    /* Oops bad JSON. */
+    /* Oops, bad JSON recovery scenario. */
 }
 
 /* When you know you only want a JsonObject or an empty one if it fails: */
@@ -43,15 +43,42 @@ JsonObject deserializedObject = Jsoner.deserialize(serialized, new JsonObject())
 /* When you know you only want a JsonArray or an empty one if it fails: */
 JsonArray deserializedArray = Jsoner.deserialize(serialized, new JsonArray());
 
-/* When you want it to look pretty: */
+/* When you want to pretty print into your log: */
 String prettyPrinted = Jsoner.prettyPrint(serialized);
+
+/* When a specific key is absolutely required: */
+try{
+    if(!deserializedObject.containsKey("requiredKey")){
+        throw new IllegalStateException("The JSON representation of an object is missing a mandatory key: 'requiredKey'.");
+    }
+}catch(IllegalStateException caught){
+    /* Oops, bad object recovery scenario. */
+}
+
+/* When you want a value but have a reasonable default or error value to use if it isn't there: */
+String couldBeTheDefault = deserializedObject.getStringOrDefault("key", "");
+byte couldBeTheErrorValue = deserializedObject.getByteOrDefault("key", (byte)-1);
+
+/* When you want a value cast to a type or null if it isn't there: */
+Integer value = deserializedObject.getInteger("key");
+
+/* Display the output of the example code: */
+System.out.println(stuff);
+System.out.println(serialized);
+System.out.println(deserialized);
+System.out.println(deserializedObject);
+System.out.println(deserializedArray);
+System.out.println(prettyPrinted);
+System.out.println(couldBeTheDefault);
+System.out.println(couldBeTheErrorValue);
+System.out.println(value);
 </pre>
     <br />
     Define how your objects are serialized as JSON by implementing the Jsonable interface.<br />
     <br />
     JsonArray and JsonObject extend ArrayList and HashMap respectively and have typed getters for each kind of JSON value.<br />
     <br />
-    Browse the JSON.simple 2.0.0 release <a href="target/apidocs/index.html">javadocs</a> for more details.<br />
+    Browse the JSON.simple 2.1.0 release <a href="target/apidocs/index.html">javadocs</a> for more details.<br />
     <br />
     Report any issues at the project repository's <a href="https://github.com/cliftonlabs/json-simple/issues">issues page</a>.
   </div>
