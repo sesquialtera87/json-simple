@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-  <title>JSON.simple</title>
+  <title>json-simple</title>
 
   <link rel="stylesheet" href="style.css"/>
   <style></style>
@@ -12,75 +12,140 @@
 </head>
 <body>
   <div>
-    Download the JSON.simple 2.1.0 release <a href="target/json-simple-2.1.0.jar">jar</a>, <a href="target/json-simple-2.1.0-javadoc.jar">javadocs</a>, and <a href="target/json-simple-2.1.0-sources.jar">source</a>.<br />
+    The json-simple library is meant to be a lightweight utility for deserializing and serializing things in Javascript Object Notation (JSON). It aims to be easy to learn and use.
+  </div>
+  <div>
+    json-simple is <a href="https://github.com/cliftonlabs/json-simple/blob/master/LICENSE">licensed</a> with a <a href="http://www.apache.org/licenses/">Apache 2.0 license</a>.
+  </div>
+  <div>
+    Download the json-simple 2.1.1 release <a href="target/json-simple-2.1.1.jar">jar</a>, <a href="target/json-simple-2.1.1-javadoc.jar">javadocs</a>, and <a href="target/json-simple-2.1.1-sources.jar">source</a>.<br />
+  </div>
+  <div>
+    As a gradle dependency in a java 7+ project:<br />
+<pre>
+runtime 'com.github.cliftonlabs:json-simple:2.1.1'
+</pre>
+  </div>
+  <div>
     As a maven dependency in a java 7+ project:<br />
 <pre class="prettyprint lang-xml">
 &lt;dependency&gt;
     &lt;groupId&gt;com.github.cliftonlabs&lt;/groupId&gt;
     &lt;artifactId&gt;json-simple&lt;/artifactId&gt;
-    &lt;version&gt;2.1.0&lt;/version&gt;
+    &lt;version&gt;2.1.1&lt;/version&gt;
 &lt;/dependency&gt;
 </pre>
   </div>
   <div>
+    View the repository's <a href="https://github.com/cliftonlabs/json-simple/blob/master/CHANGELOG">change log</a> to see what is new.
+  </div>
+  <div>
+    Report bugs or request features at the repository's <a href="https://github.com/cliftonlabs/json-simple/issues">issues page</a>.
+  </div>
+  <div>
     Try it out:<br />
 <pre class="prettyprint lang-java">
-/* Quickly serialize stuff in JSON.simple: */
-Object stuff = null;            
-String serialized = Jsoner.serialize(stuff);
+/** @param args the command line arguments. 
+ * @throws DeserializationException when the example is broken. */
+public static void main(String[] args) throws DeserializationException{
+    /* Quickly serialize stuff in JSON.simple: */
+    Object stuff = null;            
+    String serialized = Jsoner.serialize(stuff);
 
-/* Deserialize stuff in JSON.simple by handling a DeserializationException: */
-Object deserialized = -1;
-try{
-    deserialized = Jsoner.deserialize(serialized);
-}catch(DeserializationException caught){
-    /* Oops, bad JSON recovery scenario. */
-}
-
-/* When you know you only want a JsonObject or an empty one if it fails: */
-JsonObject deserializedObject = Jsoner.deserialize(serialized, new JsonObject());
-
-/* When you know you only want a JsonArray or an empty one if it fails: */
-JsonArray deserializedArray = Jsoner.deserialize(serialized, new JsonArray());
-
-/* When you want to pretty print into your log: */
-String prettyPrinted = Jsoner.prettyPrint(serialized);
-
-/* When a specific key is absolutely required: */
-try{
-    if(!deserializedObject.containsKey("requiredKey")){
-        throw new IllegalStateException("The JSON representation of an object is missing a mandatory key: 'requiredKey'.");
+    /* Deserialize stuff in JSON.simple by handling a DeserializationException: */
+    Object deserialized = -1;
+    try{
+        deserialized = Jsoner.deserialize(serialized);
+    }catch(DeserializationException caught){
+        /* Oops, bad JSON recovery scenario. */
     }
-}catch(IllegalStateException caught){
-    /* Oops, bad object recovery scenario. */
+
+    /* When you know you only want a JsonObject or an empty one if it fails: */
+    JsonObject deserializedObject = Jsoner.deserialize(serialized, new JsonObject());
+
+    /* When you know you only want a JsonArray or an empty one if it fails: */
+    JsonArray deserializedArray = Jsoner.deserialize(serialized, new JsonArray());
+
+    /* When you want to pretty print into your log: */
+    String prettyPrinted = Jsoner.prettyPrint(serialized);
+
+    /* When a specific key is absolutely required: */
+    try{
+        if(!deserializedObject.containsKey("requiredKey")){
+            throw new IllegalStateException("The JSON representation of an object is missing a mandatory key: 'requiredKey'.");
+        }
+    }catch(IllegalStateException caught){
+        /* Oops, bad object recovery scenario. */
+    }
+
+    /* When you want a value but have a reasonable default or error value to use if it isn't there: */
+    String couldBeTheDefault = deserializedObject.getStringOrDefault("missingKey", "");
+    byte couldBeTheErrorValue = deserializedObject.getByteOrDefault("missingKey", (byte)-1);
+
+    /* When you want a value cast to a type in one call but the key is missing: */
+    Integer missingValue;
+    try{
+        missingValue = deserializedObject.getInteger("missingKey");
+    }catch(NullPointerException caught){
+        /* The cast failed due to the value we expected not being there, indicating we might not be working with data we're expecting.
+         * This should have been prevented by checking if the missingKey was there in the first place. */
+        missingValue = null;
+    }
+        
+    /* When you want a value cast to a type in one call: */
+    deserializedObject.put("key", "1");
+    Integer value = deserializedObject.getInteger("key");
+
+    /* Display the output of the example code: */
+    System.out.println(stuff);
+    System.out.println(serialized);
+    System.out.println(deserialized);
+    System.out.println(deserializedObject);
+    System.out.println(deserializedArray);
+    System.out.println(prettyPrinted);
+    System.out.println(couldBeTheDefault);
+    System.out.println(couldBeTheErrorValue);
+    System.out.println(missingValue);
+    System.out.println(value);
 }
-
-/* When you want a value but have a reasonable default or error value to use if it isn't there: */
-String couldBeTheDefault = deserializedObject.getStringOrDefault("key", "");
-byte couldBeTheErrorValue = deserializedObject.getByteOrDefault("key", (byte)-1);
-
-/* When you want a value cast to a type or null if it isn't there: */
-Integer value = deserializedObject.getInteger("key");
-
-/* Display the output of the example code: */
-System.out.println(stuff);
-System.out.println(serialized);
-System.out.println(deserialized);
-System.out.println(deserializedObject);
-System.out.println(deserializedArray);
-System.out.println(prettyPrinted);
-System.out.println(couldBeTheDefault);
-System.out.println(couldBeTheErrorValue);
-System.out.println(value);
 </pre>
     <br />
     Define how your objects are serialized as JSON by implementing the Jsonable interface.<br />
     <br />
-    JsonArray and JsonObject extend ArrayList and HashMap respectively and have typed getters for each kind of JSON value.<br />
+    JsonArray and JsonObject extend ArrayList&lt;Object&gt; and HashMap&lt;String, Object&gt; respectively and have typed getters for each kind of JSON value.<br />
     <br />
-    Browse the JSON.simple 2.1.0 release <a href="target/apidocs/index.html">javadocs</a> for more details.<br />
-    <br />
-    Report any issues at the project repository's <a href="https://github.com/cliftonlabs/json-simple/issues">issues page</a>.
+    Browse the JSON.simple 2.1.1 release <a href="target/apidocs/index.html">javadocs</a> for more details.<br />
+  </div>
+  <div>
+    I hope you like where the project is headed and would love to have your support. I've included the project history below for those <a href="https://github.com/cliftonlabs/json-simple/issues/6">confused or interested</a> in the origins of the project.
+    <p>
+      This project was formerly <a href="https://github.com/fangyidong/json-simple">JSON.simple</a> from a <a href="http://code.google.com/p/json-simple/">Google code project</a> by <a href="https://github.com/fangyidong">Yidong</a>.
+    </p>
+    <p>
+      The 1.* versions of the library had the potential to produce bad JSON, its documentation was uncentralized privately hosted in various locations around the Internet, and with many issues open on the project it seemed the upstream was dead and fairly important to many projects since it had a unique architecture. A few of those projects were internal for Clifton Labs, so it was decided there was value in updating the library and attempt to merge upstream to share our work with anyone else that could benefit.
+    </p>
+    <p>
+      After redesigning the library to be backwards compatible it was decided that support for java 2 to 6 would be dropped in favor of generics (thus a 2.0.0 version) as it was the most avidly requested feature. The library was also written in the package org.json.simple so a maven artifact under the org.json.simple groupId made sense. Once all that work was done it was up to the merge with upstream to take over the rest. However, after many emails and external issues only the first part went according to plan. So, the project is now maintained by Clifton Labs and the maven artifacts are now published under com.github.cliftonlabs.
+    </p>
+    <p>
+      The issues above can be reviewed in detail at the following external resources:<br />
+      <a href="https://issues.sonatype.org/projects/OSSRH/issues/OSSRH-24756?filter=allissues">The groupId request.</a><br />
+      <a href="https://github.com/stleary/JSON-java/issues/282">The request for the org.json.simple groupId</a>.<br />
+      <a href="https://github.com/fangyidong/json-simple/pull/113">The merge upstream.</a><br />
+    </p>
+  </div>
+  <div>
+    Authors:<br />
+    Davin Loegering designed and developed the 2.* versions.<br />
+    Fang Yidong architected and developed the 1.* versions.<br />
+    Chris Nokleberg contributioned to the 1.* versions.<br />
+    Dave Hughes contributioned to the 1.* versions.<br />
+  </div>
+  <div>
+    Thanks:<br />
+    <a href="https://github.com/">Github</a> for providing such a great collaboration platform.<br />
+    <a href="https://cliftonlabs.com/">Clifton Labs</a> for taking over maintenance of the project.<br />
+    <a href="https://github.com/wltjr">William L. Thomson Jr.</a> for early and valuable feedback to help get the project off the ground.<br />
   </div>
 </body>
 </html>
