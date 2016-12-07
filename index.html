@@ -83,8 +83,10 @@ public static void main(final String[] args){
     int asInt;
     double asDouble;
     String castFromMissingKey;
-    String defaultedFromMissingKey;
+    String defaultedStringFromMissingKey;
     byte errorFromMissingKey;
+    JsonObject defaultedMapFromMissingKey;
+    JsonArray defaultedCollectionFromMissingKey;
     
     /* Deserialize stuff in json-simple by handling a DeserializationException. The jsonInput and carelessInput
      * produce the same result, but since badInput is ambiguous due to the missing ']' to close the nested array it
@@ -155,8 +157,10 @@ public static void main(final String[] args){
     }
     
     /* However, objects can also get with defaults if something isn't there if you don't want to make it required. */
-    defaultedFromMissingKey = deserializedObject.getStringOrDefault("missing_key", "Defaults are convenient.");
+    defaultedStringFromMissingKey = deserializedObject.getStringOrDefault("missing_key", "Defaults are convenient.");
     errorFromMissingKey = deserializedObject.getByteOrDefault("missing_key", (byte)-1);
+    defaultedMapFromMissingKey = deserializedObject.getMapOrDefault("missing_key", new JsonObject());
+    defaultedCollectionFromMissingKey = deserializedObject.getCollectionOrDefault("missing_key", new JsonArray());
     
     /* Display the output of the example code: */
     System.out.println("Inputs:");
@@ -197,8 +201,10 @@ public static void main(final String[] args){
     
     System.out.println("Handling missing_key:");
     System.out.println("Handled NPE: " + castFromMissingKey);
-    System.out.println("default to another value: " + defaultedFromMissingKey);
+    System.out.println("default to another value: " + defaultedStringFromMissingKey);
     System.out.println("default to error value: " + errorFromMissingKey);
+    System.out.println("default to another value: " + defaultedMapFromMissingKey);
+    System.out.println("default to another value: " + defaultedCollectionFromMissingKey);
 }
 </pre>
     <p>
