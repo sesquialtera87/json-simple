@@ -58,7 +58,7 @@ runtime 'com.github.cliftonlabs:json-simple:2.1.2'
     </p>
     <h3>Features</h2>
 <pre class="prettyprint lang-java">
-/** @param args the command line arguments. */
+/** @param args the command line arguments are ignored. */
 public static void main(final String[] args){
     /* All the variables for the example: */
     final String jsonInput = "{\"required_key\":123,\"key\":[\"value0\",\"value1\",2,true]}";
@@ -147,16 +147,10 @@ public static void main(final String[] args){
     
     /* Enforcing that a map contains a specific key can ensure you're working with the data you expect and prevent
      * something like the following: */
-    try{
-        castFromMissingKey = deserializedObject.getString("missing_key");
-    }catch(final NullPointerException caught){
-        /* The cast failed due to the value we expected not being there, indicating we might not be working with
-         * data we're expecting.
-         * This should have been prevented by checking if the map contains the missing_key in the first place. */
-        castFromMissingKey = null;
-    }
+    castFromMissingKey = deserializedObject.getString("missing_key");
+    /* castFromMissingKey is silently null just like a Map<String, Object> would return, but may indicate we're working with data we're not expecting. */
     
-    /* However, objects can also get with defaults if something isn't there if you don't want to make it required. */
+    /* However, objects can also get with defaults if something isn't there if you don't want to make it required and want to avoid nulls returned by missing keys (though a null could be returned if the key is explicitly set to null). */
     defaultedStringFromMissingKey = deserializedObject.getStringOrDefault("missing_key", "Defaults are convenient.");
     errorFromMissingKey = deserializedObject.getByteOrDefault("missing_key", (byte)-1);
     defaultedMapFromMissingKey = deserializedObject.getMapOrDefault("missing_key", new JsonObject());
