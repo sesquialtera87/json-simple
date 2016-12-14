@@ -148,9 +148,11 @@ public static void main(final String[] args){
     /* Enforcing that a map contains a specific key can ensure you're working with the data you expect and prevent
      * something like the following: */
     castFromMissingKey = deserializedObject.getString("missing_key");
-    /* castFromMissingKey is silently null just like a Map<String, Object> would return, but may indicate we're working with data we're not expecting. */
+    /* castFromMissingKey is silently null just like a Map<String, Object> would return, but may indicate we're
+     * working with data we're not expecting. */
     
-    /* However, objects can also get with defaults if something isn't there if you don't want to make it required and want to avoid nulls returned by missing keys (though a null could be returned if the key is explicitly set to null). */
+    /* However, objects can also get with defaults if something isn't there if you don't want to make it required and
+     * want to avoid nulls returned by missing keys (though a null could be returned if the key is explicitly set to null). */
     defaultedStringFromMissingKey = deserializedObject.getStringOrDefault("missing_key", "Defaults are convenient.");
     errorFromMissingKey = deserializedObject.getByteOrDefault("missing_key", (byte)-1);
     defaultedMapFromMissingKey = deserializedObject.getMapOrDefault("missing_key", new JsonObject());
