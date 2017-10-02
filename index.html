@@ -58,149 +58,179 @@ runtime 'com.github.cliftonlabs:json-simple:2.2.0'
     </p>
     <h3>Features</h2>
 <pre class="prettyprint lang-java">
-/** @param args the command line arguments are ignored. */
-public static void main(final String[] args){
-    /* All the variables for the example: */
-    final String jsonInput = "{\"required_key\":123,\"key\":[\"value0\",\"value1\",2,true]}";
-    final String carelessInput = "{\"required_key\"123,\"key\":[\"value0\" \"value1\" 2 true],}";
-    final String badInput = "{\"required_key\":123,\"key\":[\"value0\",\"value1\",2,true}";
-    Object jsonOutput;
-    Object carelessOutput;
-    Object badOutput;
-    JsonObject deserializedObject;
-    JsonArray deserializedArray;
-    String jsonSerialized;
-    String carelessSerialized;
-    String badSerialized;
-    String serializedObject;
-    String serializedArray;
-    String jsonPrettyPrinted;
-    String carelessPrettyPrinted;
-    String badPrettyPrinted;
-    String objectPrettyPrinted;
-    String arrayPrettyPrinted;
-    String asString;
-    int asInt;
-    double asDouble;
-    String castFromMissingKey;
-    String defaultedStringFromMissingKey;
-    byte errorFromMissingKey;
-    JsonObject defaultedMapFromMissingKey;
-    JsonArray defaultedCollectionFromMissingKey;
-    
-    /* Deserialize stuff in json-simple by handling a DeserializationException. The jsonInput and carelessInput
-     * produce the same result, but since badInput is ambiguous due to the missing ']' to close the nested array it
-     * will produce a DeserializationException. */
-    try{
-        jsonOutput = Jsoner.deserialize(jsonInput);
-    }catch(final DeserializationException caught){
-        /* Oops, json input didn't work. */
-        jsonOutput = null;
-    }
-    
-    try{
-        carelessOutput = Jsoner.deserialize(carelessInput);
-    }catch(final DeserializationException caught){
-        /* Oops, careless input didn't work. */
-        carelessOutput = null;
-    }
-    
-    try{
-        badOutput = Jsoner.deserialize(badInput);
-    }catch(final DeserializationException caught){
-        /* Obviously, bad input didn't work. */
-        badOutput = null;
-    }
-    
-    /* You can also deserialize stuff without handling a DeserializationException if you know what you want in
-     * advance and provide a default return object just in case it fails to deserialize your input or wasn't
-     * expected (like having object input when you wanted an array). */
-    deserializedObject = Jsoner.deserialize(jsonInput, new JsonObject());
-    deserializedArray = Jsoner.deserialize(jsonInput, new JsonArray());
-    
-    /* Serialize things into proper JSON format no matter how it was input. */
-    jsonSerialized = Jsoner.serialize(jsonOutput);
-    carelessSerialized = Jsoner.serialize(carelessOutput);
-    badSerialized = Jsoner.serialize(badOutput);
-    serializedObject = Jsoner.serialize(deserializedObject);
-    serializedArray = Jsoner.serialize(deserializedArray);
-    
-    /* You can also pretty print it for your logs. */
-    jsonPrettyPrinted = Jsoner.prettyPrint(jsonSerialized);
-    carelessPrettyPrinted = Jsoner.prettyPrint(carelessSerialized);
-    badPrettyPrinted = Jsoner.prettyPrint(badSerialized);
-    objectPrettyPrinted = Jsoner.prettyPrint(serializedObject);
-    arrayPrettyPrinted = Jsoner.prettyPrint(serializedArray);
-    
-    /* JsonObject implement java.util.Map and JsonArray implement java.util.List so you can use the APIs you're
-     * already familiar with. */
-    /* Like enforcing a specific key is required: */
-    if(!deserializedObject.containsKey("required_key")){
-        throw new IllegalStateException("The JSON representation of an object is missing a mandatory key: 'required_key'.");
-    }
-    
-    /* You also have some added functionality, like getting and casting in one call with type safety. Notice how the
-     * 'required_key' value is an int. */
-    asString = deserializedObject.getString("required_key");
-    asInt = deserializedObject.getInteger("required_key");
-    asDouble = deserializedObject.getDouble("required_key");
-    
-    /* Enforcing that a map contains a specific key can ensure you're working with the data you expect and prevent
-     * something like the following: */
-    castFromMissingKey = deserializedObject.getString("missing_key");
-    /* castFromMissingKey is silently null just like a Map<String, Object> would return, but may indicate we're
-     * working with data we're not expecting. */
-    
-    /* However, objects can also get with defaults if something isn't there if you don't want to make it required and
-     * want to avoid nulls returned by missing keys (though a null could be returned if the key is explicitly set to null). */
-    defaultedStringFromMissingKey = deserializedObject.getStringOrDefault("missing_key", "Defaults are convenient.");
-    errorFromMissingKey = deserializedObject.getByteOrDefault("missing_key", (byte)-1);
-    defaultedMapFromMissingKey = deserializedObject.getMapOrDefault("missing_key", new JsonObject());
-    defaultedCollectionFromMissingKey = deserializedObject.getCollectionOrDefault("missing_key", new JsonArray());
-    
-    /* Display the output of the example code: */
-    System.out.println("Inputs:");
-    System.out.println("JSON: \"" + jsonInput + "\"");
-    System.out.println("Careless: \"" + carelessInput + "\"");
-    System.out.println("Bad: \"" + badInput + "\"");
-    System.out.println();
-    
-    System.out.println("Output's toString():");
-    System.out.println("JSON: " + jsonOutput);
-    System.out.println("Careless: " + carelessOutput);
-    System.out.println("Bad: " + badOutput);
-    System.out.println("Object: " + deserializedObject);
-    System.out.println("Array: " + deserializedArray);
-    System.out.println();
-    
-    System.out.println("Serialized to JSON:");
-    System.out.println("JSON: " + jsonSerialized);
-    System.out.println("Careless: " + carelessSerialized);
-    System.out.println("Bad: " + badSerialized);
-    System.out.println("Object: " + serializedObject);
-    System.out.println("Array: " + serializedArray);
-    System.out.println();
-    
-    System.out.println("Pretty printed JSON:");
-    System.out.println("JSON: " + jsonPrettyPrinted);
-    System.out.println("Careless: " + carelessPrettyPrinted);
-    System.out.println("Bad: " + badPrettyPrinted);
-    System.out.println("Object: " + objectPrettyPrinted);
-    System.out.println("Array: " + arrayPrettyPrinted);
-    System.out.println();
-    
-    System.out.println("The required_key as different types:");
-    System.out.println("String: " + asString);
-    System.out.println("int: " + asInt);
-    System.out.println("double: " + asDouble);
-    System.out.println();
-    
-    System.out.println("Handling missing_key:");
-    System.out.println("Get or getCast: " + castFromMissingKey);
-    System.out.println("default String value: " + defaultedStringFromMissingKey);
-    System.out.println("default to error value: " + errorFromMissingKey);
-    System.out.println("default Map value: " + defaultedMapFromMissingKey);
-    System.out.println("default Collection value: " + defaultedCollectionFromMissingKey);
+import java.io.IOException;
+import java.io.Writer;
+
+import org.json.simple.DeserializationException;
+import org.json.simple.JsonArray;
+import org.json.simple.JsonObject;
+import org.json.simple.Jsonable;
+import org.json.simple.Jsoner;
+
+/** Jsonable example implementation and main demonstrates the library uses. */
+public class JsonSimpleExample implements Jsonable{
+	/** Ensures JSON keys can be easily refactored. */
+	enum JsonKeys{
+		KEY_ONE,
+		KEY_TWO;
+	}
+
+	private final String	fieldOne;
+	private final int		fieldTwo;
+
+	/** Instantiates with example data. */
+	private JsonSimpleExample(){
+		this.fieldOne = "one";
+		this.fieldTwo = 2;
+	}
+
+	/** @param args the command line arguments are ignored. */
+	public static void main(final String[] args){
+		/* All the variables for the example: */
+		final JsonSimpleExample jsonable = new JsonSimpleExample();
+		final String jsonInput = "{\"required_key\":123,\"key\":[\"value0\",\"value1\",2,true]}";
+		final String carelessInput = "{\"required_key\"123,\"key\":[\"value0\" \"value1\" 2 true],}";
+		final String badInput = "{\"required_key\":123,\"key\":[\"value0\",\"value1\",2,true}";
+		Object jsonOutput;
+		Object carelessOutput;
+		Object badOutput;
+		JsonObject deserializedObject;
+		JsonArray deserializedArray;
+		String jsonSerialized;
+		String carelessSerialized;
+		String badSerialized;
+		String serializedObject;
+		String serializedArray;
+		String jsonPrettyPrinted;
+		String carelessPrettyPrinted;
+		String badPrettyPrinted;
+		String objectPrettyPrinted;
+		String arrayPrettyPrinted;
+		String asString;
+		int asInt;
+		double asDouble;
+		String castFromMissingKey;
+		String defaultedStringFromMissingKey;
+		byte errorFromMissingKey;
+		JsonObject defaultedMapFromMissingKey;
+		JsonArray defaultedCollectionFromMissingKey;
+		/* Deserialize stuff in json-simple by handling a DeserializationException. The jsonInput and carelessInput
+		 * produce the same result, but since badInput is ambiguous due to the missing ']' to close the nested array it
+		 * will produce a DeserializationException. */
+		try{
+			jsonOutput = Jsoner.deserialize(jsonInput);
+		}catch(final DeserializationException caught){
+			/* Oops, json input didn't work. */
+			jsonOutput = null;
+		}
+		try{
+			carelessOutput = Jsoner.deserialize(carelessInput);
+		}catch(final DeserializationException caught){
+			/* Oops, careless input didn't work. */
+			carelessOutput = null;
+		}
+		try{
+			badOutput = Jsoner.deserialize(badInput);
+		}catch(final DeserializationException caught){
+			/* Obviously, bad input didn't work. */
+			badOutput = null;
+		}
+		/* You can also deserialize stuff without handling a DeserializationException if you know what you want in
+		 * advance and provide a default return object just in case it fails to deserialize your input or wasn't
+		 * expected (like having object input when you wanted an array). */
+		deserializedObject = Jsoner.deserialize(jsonInput, new JsonObject());
+		deserializedArray = Jsoner.deserialize(jsonInput, new JsonArray());
+		/* Serialize things into proper JSON format no matter how it was input. */
+		jsonSerialized = Jsoner.serialize(jsonOutput);
+		carelessSerialized = Jsoner.serialize(carelessOutput);
+		badSerialized = Jsoner.serialize(badOutput);
+		serializedObject = Jsoner.serialize(deserializedObject);
+		serializedArray = Jsoner.serialize(deserializedArray);
+		/* You can also pretty print it for your logs with tabs or spaces. */
+		jsonPrettyPrinted = Jsoner.prettyPrint(jsonSerialized);
+		carelessPrettyPrinted = Jsoner.prettyPrint(carelessSerialized, 4);
+		badPrettyPrinted = Jsoner.prettyPrint(badSerialized, 10);
+		objectPrettyPrinted = Jsoner.prettyPrint(serializedObject);
+		arrayPrettyPrinted = Jsoner.prettyPrint(serializedArray);
+		/* JsonObject implement java.util.Map and JsonArray implement java.util.List so you can use the APIs you're
+		 * already familiar with. */
+		/* Like enforcing a specific key is required: */
+		if(!deserializedObject.containsKey("required_key")){
+			throw new IllegalStateException("The JSON representation of an object is missing a mandatory key: 'required_key'.");
+		}
+		/* You also have some added functionality, like getting and casting in one call with type safety. Notice how the
+		 * 'required_key' value is an int. */
+		asString = deserializedObject.getString("required_key");
+		asInt = deserializedObject.getInteger("required_key");
+		asDouble = deserializedObject.getDouble("required_key");
+		/* Enforcing that a map contains a specific key can ensure you're working with the data you expect and prevent
+		 * something like the following: */
+		castFromMissingKey = deserializedObject.getString("missing_key");
+		/* castFromMissingKey is silently null just like a Map would return, but may indicate we're
+		 * working with data we're not expecting. */
+		/* However, objects can also get with defaults if something isn't there if you don't want to make it required
+		 * and
+		 * want to avoid nulls returned by missing keys (though a null could be returned if the key is explicitly set to
+		 * null). */
+		defaultedStringFromMissingKey = deserializedObject.getStringOrDefault("missing_key", "Defaults are convenient.");
+		errorFromMissingKey = deserializedObject.getByteOrDefault("missing_key", (byte)-1);
+		defaultedMapFromMissingKey = deserializedObject.getMapOrDefault("missing_key", new JsonObject());
+		defaultedCollectionFromMissingKey = deserializedObject.getCollectionOrDefault("missing_key", new JsonArray());
+		/* Display the output of the example code: */
+		System.out.println("Inputs:");
+		System.out.println("JSON: \"" + jsonInput + "\"");
+		System.out.println("Careless: \"" + carelessInput + "\"");
+		System.out.println("Bad: \"" + badInput + "\"");
+		System.out.println();
+		System.out.println("Output's toString():");
+		System.out.println("Jsonable: " + jsonable.toString());
+		System.out.println("JSON: " + jsonOutput);
+		System.out.println("Careless: " + carelessOutput);
+		System.out.println("Bad: " + badOutput);
+		System.out.println("Object: " + deserializedObject);
+		System.out.println("Array: " + deserializedArray);
+		System.out.println();
+		System.out.println("Serialized to JSON:");
+		System.out.println("Jsonable: " + jsonable.toJson());
+		System.out.println("JSON: " + jsonSerialized);
+		System.out.println("Careless: " + carelessSerialized);
+		System.out.println("Bad: " + badSerialized);
+		System.out.println("Object: " + serializedObject);
+		System.out.println("Array: " + serializedArray);
+		System.out.println();
+		System.out.println("Pretty printed JSON:");
+		System.out.println("Jsonable: " + Jsoner.prettyPrint(jsonable.toJson()));
+		System.out.println("JSON: " + jsonPrettyPrinted);
+		System.out.println("Careless: " + carelessPrettyPrinted);
+		System.out.println("Bad: " + badPrettyPrinted);
+		System.out.println("Object: " + objectPrettyPrinted);
+		System.out.println("Array: " + arrayPrettyPrinted);
+		System.out.println();
+		System.out.println("The required_key as different types:");
+		System.out.println("String: " + asString);
+		System.out.println("int: " + asInt);
+		System.out.println("double: " + asDouble);
+		System.out.println();
+		System.out.println("Handling missing_key:");
+		System.out.println("Get or getCast: " + castFromMissingKey);
+		System.out.println("default String value: " + defaultedStringFromMissingKey);
+		System.out.println("default to error value: " + errorFromMissingKey);
+		System.out.println("default Map value: " + defaultedMapFromMissingKey);
+		System.out.println("default Collection value: " + defaultedCollectionFromMissingKey);
+	}
+
+	@Override
+	public String toJson(){
+		final JsonObject json = new JsonObject();
+		json.put(JsonKeys.KEY_ONE.name(), this.fieldOne);
+		json.put(JsonKeys.KEY_TWO.name(), this.fieldTwo);
+		return json.toJson();
+	}
+
+	@Override
+	public void toJson(final Writer writable) throws IOException{
+		writable.write(this.toJson());
+	}
 }
 </pre>
     <p>
