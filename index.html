@@ -67,14 +67,16 @@ import org.json.simple.JsonObject;
 import org.json.simple.Jsonable;
 import org.json.simple.Jsoner;
 
-/** Jsonable example implementation and main demonstrates the library uses. */
+/** Jsonable example implementation and main demonstrates the library features. */
 public class JsonSimpleExample implements Jsonable{
-	/** Ensures JSON keys can be easily refactored. */
+	/** Ensures JSON keys can be easily refactored. Typically each key is named after the instance's fields. */
 	enum JsonKeys{
 		KEY_ONE,
 		KEY_TWO;
 	}
 
+	/* An assortment of data for the instance can be serialized to JSON format. If a non-JSON value is needed you can
+	 * make a wrapper that implements Jsonable or do the conversion in the instance's toJson() method. */
 	private final String	fieldOne;
 	private final int		fieldTwo;
 
@@ -82,6 +84,17 @@ public class JsonSimpleExample implements Jsonable{
 	private JsonSimpleExample(){
 		this.fieldOne = "one";
 		this.fieldTwo = 2;
+	}
+
+	/** Instantiates JsonSimpleExample using a JsonObject.
+	 * @param json represents a JsonSimpleExample in JsonObject form.
+	 * @throws IllegalArgumentException if KEY_ONE or KEY_TWO is not present in json. */
+	JsonSimpleExample(final JsonObject json){
+		if(!json.containsKey(JsonKeys.KEY_ONE.name()) || !json.containsKey(JsonKeys.KEY_TWO.name())){
+			throw new IllegalArgumentException("JsonSimpleExample cannot be instantiated without 'KEY_ONE' or 'KEY_TWO'");
+		}
+		this.fieldOne = json.getString(JsonKeys.KEY_ONE.name());
+		this.fieldTwo = json.getInteger(JsonKeys.KEY_TWO.name());
 	}
 
 	/** @param args the command line arguments are ignored. */
