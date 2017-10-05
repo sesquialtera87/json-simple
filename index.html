@@ -59,6 +59,7 @@ runtime 'com.github.cliftonlabs:json-simple:2.3.0'
     <h3>Features</h2>
 <pre class="prettyprint lang-java">
 import java.io.IOException;
+import java.io.StringWriter;
 import java.io.Writer;
 import java.util.NoSuchElementException;
 
@@ -136,7 +137,8 @@ public class JsonSimpleExample implements Jsonable{
 	/** @param args the command line arguments are ignored. */
 	public static void main(final String[] args){
 		/* Minting a temporary key for the library demonstration. They should be minted in an enumeration or as class
-		 * constants in practice. Also, demonstrates a temporary key minted with a different value for different contexts. */
+		 * constants in practice. Also, demonstrates a temporary key minted with a different value for different
+		 * contexts. */
 		final JsonKey requiredKey = Jsoner.mintJsonKey("required_key", 123);
 		final JsonKey missingKeyWithDefault = Jsoner.mintJsonKey("missing_key", "Defaults are convenient.");
 		final JsonKey missingKeyWithErrorValue = Jsoner.mintJsonKey(missingKeyWithDefault.getKey(), (byte)-1);
@@ -218,7 +220,8 @@ public class JsonSimpleExample implements Jsonable{
 		try{
 			deserializedObject.requireKeys(requiredKey, requiredKey, requiredKey);
 		}catch(final NoSuchElementException caught){
-			/* Can use a more context appropriate throwable or let the exception bubble up to be handled by a controller. */
+			/* Can use a more context appropriate throwable or let the exception bubble up to be handled by a
+			 * controller. */
 			caught.printStackTrace();
 		}
 		/* You also have some added functionality, like getting and casting in one call with type safety. Notice how the
@@ -284,15 +287,21 @@ public class JsonSimpleExample implements Jsonable{
 
 	@Override
 	public String toJson(){
-		final JsonObject json = new JsonObject();
-		json.put(ExampleKeys.KEY_ONE.getKey(), this.fieldOne);
-		json.put(JsonSimpleExample.keyTwo.getKey(), this.fieldTwo);
-		return json.toJson();
+		final StringWriter writable = new StringWriter();
+		try{
+			this.toJson(writable);
+		}catch(final IOException caught){
+			/* See java.io.StringWriter. */
+		}
+		return writable.toString();
 	}
 
 	@Override
 	public void toJson(final Writer writable) throws IOException{
-		writable.write(this.toJson());
+		final JsonObject json = new JsonObject();
+		json.put(ExampleKeys.KEY_ONE.getKey(), this.fieldOne);
+		json.put(JsonSimpleExample.keyTwo.getKey(), this.fieldTwo);
+		json.toJson(writable);
 	}
 }
 </pre>
