@@ -20,13 +20,13 @@
   <div class="section">
     <h2>Get json-simple</h2>
     <p>
-      Download json-simple's latest release <a href="target/json-simple-2.3.0.jar">jar</a>, <a href="target/json-simple-2.3.0-javadoc.jar">javadocs</a>, and <a href="target/json-simple-2.3.0-sources.jar">source</a>.
+      Download json-simple's latest release <a href="target/json-simple-3.0.0.jar">jar</a>, <a href="target/json-simple-3.0.0-javadoc.jar">javadocs</a>, and <a href="target/json-simple-3.0.0-sources.jar">source</a>.
     </p>
   </div>
   <div class="section">
     <h3>As a Gradle Dependency</h3>
 <pre class="prettyprint">
-runtime 'com.github.cliftonlabs:json-simple:2.3.0'
+runtime 'com.github.cliftonlabs:json-simple:3.0.0'
 </pre>
   </div>
   <div class="section">
@@ -35,7 +35,7 @@ runtime 'com.github.cliftonlabs:json-simple:2.3.0'
 &lt;dependency&gt;
     &lt;groupId&gt;com.github.cliftonlabs&lt;/groupId&gt;
     &lt;artifactId&gt;json-simple&lt;/artifactId&gt;
-    &lt;version&gt;2.3.0&lt;/version&gt;
+    &lt;version&gt;3.0.0&lt;/version&gt;
 &lt;/dependency&gt;
 </pre>
   </div>
@@ -63,12 +63,12 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.NoSuchElementException;
 
-import org.json.simple.DeserializationException;
-import org.json.simple.JsonArray;
-import org.json.simple.JsonKey;
-import org.json.simple.JsonObject;
-import org.json.simple.Jsonable;
-import org.json.simple.Jsoner;
+import com.github.cliftonlabs.json_simple.JsonException;
+import com.github.cliftonlabs.json_simple.JsonArray;
+import com.github.cliftonlabs.json_simple.JsonKey;
+import com.github.cliftonlabs.json_simple.JsonObject;
+import com.github.cliftonlabs.json_simple.Jsonable;
+import com.github.cliftonlabs.json_simple.Jsoner;
 
 /** Jsonable example implementation and main demonstrates the library features. */
 public class JsonSimpleExample implements Jsonable{
@@ -81,7 +81,9 @@ public class JsonSimpleExample implements Jsonable{
 		/** Describe any documentation necessary so that it is available when others need to know what the keys mean or
 		 * what its value should represent. */
 		KEY_ONE("one"),
+		@SuppressWarnings("javadoc")
 		Key_TWo(2);
+		@SuppressWarnings("javadoc")
 		private final Object value;
 
 		/** Instantiates a JsonKey with the provided value.
@@ -112,10 +114,12 @@ public class JsonSimpleExample implements Jsonable{
 	/** Describe any documentation necessary so that it is available when others need to know what the keys mean or
 	 * should be paired with. */
 	static final JsonKey	keyOne;
+	@SuppressWarnings("javadoc")
 	static final JsonKey	keyTwo;
-	/* An assortment of data for the instance can be serialized to JSON format. If a non-JSON value is needed you can
+	/** An assortment of data for the instance can be serialized to JSON format. If a non-JSON value is needed you can
 	 * make a wrapper that implements Jsonable or do the conversion in the instance's toJson() method. */
 	private final String	fieldOne;
+	@SuppressWarnings("javadoc")
 	private final int		fieldTwo;
 
 	/** Instantiates with example data. */
@@ -177,19 +181,19 @@ public class JsonSimpleExample implements Jsonable{
 		 * will produce a DeserializationException. */
 		try{
 			jsonOutput = Jsoner.deserialize(jsonInput);
-		}catch(final DeserializationException caught){
+		}catch(final JsonException caught){
 			/* Oops, json input didn't work. */
 			jsonOutput = null;
 		}
 		try{
 			carelessOutput = Jsoner.deserialize(carelessInput);
-		}catch(final DeserializationException caught){
+		}catch(final JsonException caught){
 			/* Oops, careless input didn't work. */
 			carelessOutput = null;
 		}
 		try{
 			badOutput = Jsoner.deserialize(badInput);
-		}catch(final DeserializationException caught){
+		}catch(final JsonException caught){
 			/* Obviously, bad input didn't work. */
 			badOutput = null;
 		}
@@ -327,7 +331,7 @@ public class JsonSimpleExample implements Jsonable{
   <div class="section">
     <h2>Authors</h2>
     <p>
-      Davin Loegering designed and developed the 2.* versions.
+      Davin Loegering designed and developed the 2.* and 3.* versions.
     </p>
     <p>
       Fang Yidong architected and developed the 1.* versions.
