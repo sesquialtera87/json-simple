@@ -53,10 +53,30 @@ runtime 'com.github.cliftonlabs:json-simple:3.0.0'
   </div>
   <div class="section">
     <h2>Documentation</h2>
-    <p>
-      Browse the json-simple latest release <a href="target/apidocs/index.html">javadocs</a>.
-    </p>
-    <h3>Features</h2>
+      <p>
+        Browse the json-simple latest release <a href="target/apidocs/index.html">javadocs</a>.
+      </p>
+    <h3>Features</h3>
+    <h4>Overview</h4>
+      <p>
+        See these features in action in the example.
+      </p>
+      <ul>
+        <li>JsonArray extends java.util.ArrayList so it is compatible with all interfaces and utilities that use them.</li>
+        <li>JsonObject extends java.util.HashMap so it is compatible with all interfaces and utilities that use them.</li>
+        <li>Lenient deserialization so there is no more hunting for the extra/missing comma or a missing colon.</li>
+		<li>Deserialization errors tell you the position the error happened at.</li>
+        <li>Deserializes numbers larger than Long.MAX_VALUE and smaller than Long.MIN_VALUE using BigDecimals.</li>
+        <li>Strong typing with flexiblity, e.g. call #getString(JsonKey) on a Number or boolean and it is implicitly returned as a String or #getInteger(JsonKey) on a BigDecimal or double and get an Integer.</li>
+        <li>Strict compliance to RFC 4627 serialization.</li>
+        <li>Thread-safe deserialization and serialization.</li>
+        <li>Jsonable interface allows you to define how objects are serialized. With a constructor you can define how objects are deserialized.</li>
+        <li>JsonKeys and code self documents your JSON data models.</li>
+        <li>Easy data model refactoring when using JsonKeys.</li>
+        <li>Fast and light weight.</li>
+        <li>Thorough javadocs.</li>
+      </ul>
+    <h4>Example</h4>
 <pre class="prettyprint lang-java">
 import java.io.IOException;
 import java.io.StringWriter;
