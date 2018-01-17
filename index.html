@@ -77,14 +77,15 @@ runtime 'com.github.cliftonlabs:json-simple:3.0.1'
         <li>Thorough javadocs.</li>
       </ul>
     <h4>Example</h4>
+      We recommend enums that implement JsonKey. Minting keys directly should be used with discretion, like when another default value other than the one defined in the enum should be used in a specific case, while the enum is used in general cases.
 <pre class="prettyprint lang-java">
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.NoSuchElementException;
 
-import com.github.cliftonlabs.json_simple.JsonException;
 import com.github.cliftonlabs.json_simple.JsonArray;
+import com.github.cliftonlabs.json_simple.JsonException;
 import com.github.cliftonlabs.json_simple.JsonKey;
 import com.github.cliftonlabs.json_simple.JsonObject;
 import com.github.cliftonlabs.json_simple.Jsonable;
@@ -101,9 +102,9 @@ public class JsonSimpleExample implements Jsonable{
 		/** Describe any documentation necessary so that it is available when others need to know what the keys mean or
 		 * what its value should represent. */
 		KEY_ONE("one"),
-		@SuppressWarnings("javadoc")
+		/** @see ExampleKeys#getKey() */
 		Key_TWo(2);
-		@SuppressWarnings("javadoc")
+		/** @see ExampleKeys#getValue() */
 		private final Object value;
 
 		/** Instantiates a JsonKey with the provided value.
@@ -153,9 +154,18 @@ public class JsonSimpleExample implements Jsonable{
 	 * @throws NoSuchElementException if KEY_ONE or KEY_TWO is not present in json, it will note which are missing in
 	 *         its message. */
 	JsonSimpleExample(final JsonObject json){
-		json.requireKeys(ExampleKeys.KEY_ONE, JsonSimpleExample.keyTwo);
-		this.fieldOne = json.getString(JsonSimpleExample.keyOne);
-		this.fieldTwo = json.getInteger(ExampleKeys.Key_TWo);
+		this(json.getStringOrDefault(JsonSimpleExample.ExampleKeys.KEY_ONE), json.getIntegerOrDefault(JsonSimpleExample.keyTwo));
+	}
+
+	/** Instantiates JsonSimpleExample without assumptions.
+	 * @param fieldOne represents your first constructor parameter.
+	 * @param fieldTwo represents your second constructor parameter. */
+	public JsonSimpleExample(final String fieldOne, final int fieldTwo){
+		if(fieldOne == null){
+			throw new IllegalArgumentException("JsonSimpleExample cannot be instantiated with a null value for fieldOne.");
+		}
+		this.fieldOne = fieldOne;
+		this.fieldTwo = fieldTwo;
 	}
 
 	/** @param args the command line arguments are ignored. */
@@ -202,13 +212,13 @@ public class JsonSimpleExample implements Jsonable{
 		try{
 			jsonOutput = Jsoner.deserialize(jsonInput);
 		}catch(final JsonException caught){
-			/* Oops, json input didn't work. */
+			/* Won't happen in this example. */
 			jsonOutput = null;
 		}
 		try{
 			carelessOutput = Jsoner.deserialize(carelessInput);
 		}catch(final JsonException caught){
-			/* Oops, careless input didn't work. */
+			/* Won't happen in this example. */
 			carelessOutput = null;
 		}
 		try{
@@ -326,6 +336,11 @@ public class JsonSimpleExample implements Jsonable{
 		json.put(ExampleKeys.KEY_ONE.getKey(), this.fieldOne);
 		json.put(JsonSimpleExample.keyTwo.getKey(), this.fieldTwo);
 		json.toJson(writable);
+	}
+
+	@Override
+	public String toString(){
+		return "JsonSimpleExample [fieldOne=" + this.fieldOne + ", fieldTwo=" + this.fieldTwo + "]";
 	}
 }
 </pre>
