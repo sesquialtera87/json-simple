@@ -91,21 +91,25 @@ import com.github.cliftonlabs.json_simple.JsonObject;
 import com.github.cliftonlabs.json_simple.Jsonable;
 import com.github.cliftonlabs.json_simple.Jsoner;
 
-/** Jsonable example implementation and main demonstrates the library features. */
+/** Jsonable practical example implementation with notes on alternative implementations when more flexibility may be
+ * needed for your project. */
 public class JsonSimpleExample implements Jsonable{
-	/* Establish JsonKeys to make sure the code is easier to maintain. To demonstrate both ways I'm using both
-	 * interchangeably, choose the one you like. If you're using keys from multiple files and that is acceptable for
-	 * you, then consider using a MasterKey enum or class that enumerates or mints the JsonKeys used in the package. */
-	/** You could enumerate your keys using ExampleKeys as a template. Typically each key is named after the instance's
-	 * fields. */
+	/** Establish JsonKeys to make sure the code is easier to refactor in the future. Enumerating keys is shown since it
+	 * is the recommended option but keys can be minted as static constants via
+	 * {@link Jsoner#mintJsonKey(String, Object)} as well. */
 	enum ExampleKeys implements JsonKey{
-		/** Describe any documentation necessary so that it is available when others need to know what the keys mean or
-		 * what its value should represent. */
-		KEY_ONE("one"),
-		/** @see ExampleKeys#getKey() */
-		Key_TWo(2);
+	/** Describe any documentation necessary so that it is available when others need to know what the keys mean or
+	 * what its value should represent. */
+	KEY_ONE("one"),
+	/** @see ExampleKeys#getKey() */
+	KEY_TWO(2);
+		static{
+			PREFIX = "json_example_";
+		}
+		/** Prefixes can be used to name space your keys to make it more readable in JSON format. */
+		private static final String	PREFIX;
 		/** @see ExampleKeys#getValue() */
-		private final Object value;
+		private final Object		value;
 
 		/** Instantiates a JsonKey with the provided value.
 		 * @param value represents a valid default for the key. */
@@ -117,44 +121,50 @@ public class JsonSimpleExample implements Jsonable{
 		public String getKey(){
 			/* You can use the enum name as is or have a String field that holds the key itself or ensure the keys are
 			 * in a particular format (like lowercase). */
-			return this.name();
+			return ExampleKeys.PREFIX + this.name().toLowerCase();
 		}
 
 		@Override
 		public Object getValue(){
-			/* Can represent a valid default, error value, or null adhoc for the JsonKey. */
+			/* Can represent a valid default, error value, or null adhoc for the JsonKey. See the javadocs for more
+			 * information about its intended use. */
 			return this.value;
 		}
 	}
 
-	static{
-		/* You could establish class constants for your keys. */
-		keyOne = Jsoner.mintJsonKey("key_one", "one");
-		keyTwo = Jsoner.mintJsonKey("Key_TWo", 2);
-	}
-	/** Describe any documentation necessary so that it is available when others need to know what the keys mean or
-	 * should be paired with. */
-	static final JsonKey	keyOne;
-	@SuppressWarnings("javadoc")
-	static final JsonKey	keyTwo;
 	/** An assortment of data for the instance can be serialized to JSON format. If a non-JSON value is needed you can
-	 * make a wrapper that implements Jsonable or do the conversion in the instance's toJson() method. */
+	 * make a wrapper that implements Jsonable or do the conversion in the instance's toJson() method.
+	 * Javadocs for a field SHOULD be described in the JsonKey that represents the field to avoid duplicated javadocs
+	 * and inconsistently updated documentation. It is also the most 'public' documentation to aid developers who are
+	 * parsing the JSON that represents the Jsonable, whether they're internal on another project or external API
+	 * consumers but shouldn't be exposing internal field implementations to. Of course, any documentation relevant to
+	 * the implementation can be accounted for on the field itself instead of in the key's javadocs. */
 	private final String	fieldOne;
 	@SuppressWarnings("javadoc")
 	private final int		fieldTwo;
 
-	/** Instantiates with example data. */
+	/** Instantiates with default data. */
 	private JsonSimpleExample(){
-		this.fieldOne = "one";
-		this.fieldTwo = 2;
+		this.fieldOne = (String)JsonSimpleExample.ExampleKeys.KEY_ONE.getValue();
+		this.fieldTwo = (int)JsonSimpleExample.ExampleKeys.KEY_TWO.getValue();
 	}
 
-	/** Instantiates JsonSimpleExample using a JsonObject.
-	 * @param json represents a JsonSimpleExample in JsonObject form.
-	 * @throws NoSuchElementException if KEY_ONE or KEY_TWO is not present in json, it will note which are missing in
-	 *         its message. */
+	/** Instantiates JsonSimpleExample using a JsonObject, but uses the key's provided values if it isn't present
+	 * without reflection or security exception potential.
+	 * @param json represents a JsonSimpleExample in JsonObject form. */
 	JsonSimpleExample(final JsonObject json){
-		this(json.getStringOrDefault(JsonSimpleExample.ExampleKeys.KEY_ONE), json.getIntegerOrDefault(JsonSimpleExample.keyTwo));
+		this(json.getStringOrDefault(JsonSimpleExample.ExampleKeys.KEY_ONE), json.getIntegerOrDefault(JsonSimpleExample.ExampleKeys.KEY_TWO));
+		/* The called constructor is assumed to do any validation for the values provided. Like in this case checking
+		 * that fieldOne isn't null and fieldTwo is within the specified range. However checking if defaults were used
+		 * is as simple as checking if the JSON field was present. */
+		if(json.containsKey(JsonSimpleExample.ExampleKeys.KEY_ONE.getKey())){
+			/* Print to the log that a JsonSimpleExample resorted to a default value. */
+			System.out.println(JsonSimpleExample.class.getSimpleName() + " wasn't provided a fieldOne value and so defaulted to: " + ExampleKeys.KEY_ONE.getValue());
+		}
+		if(json.containsKey(JsonSimpleExample.ExampleKeys.KEY_TWO.getKey())){
+			/* Print to the log that a JsonSimpleExample resorted to a default value. */
+			System.out.println(JsonSimpleExample.class.getSimpleName() + " wasn't provided a fieldTwo value and so defaulted to: " + ExampleKeys.KEY_TWO.getValue());
+		}
 	}
 
 	/** Instantiates JsonSimpleExample without assumptions.
@@ -162,13 +172,18 @@ public class JsonSimpleExample implements Jsonable{
 	 * @param fieldTwo represents your second constructor parameter. */
 	public JsonSimpleExample(final String fieldOne, final int fieldTwo){
 		if(fieldOne == null){
-			throw new IllegalArgumentException("JsonSimpleExample cannot be instantiated with a null value for fieldOne.");
+			throw new IllegalArgumentException(JsonSimpleExample.class.getSimpleName() + " cannot be instantiated with a null value for fieldOne.");
+		}
+		if(fieldTwo < 0){
+			throw new IllegalArgumentException(JsonSimpleExample.class.getSimpleName() + " cannot be instantiated with a value less than 0 for fieldTwo.");
 		}
 		this.fieldOne = fieldOne;
 		this.fieldTwo = fieldTwo;
 	}
 
-	/** @param args the command line arguments are ignored. */
+	/** The main function isn't part of the practical example and only demonstrates the library's features using the
+	 * JsonSimpleExample object.
+	 * @param args the command line arguments are ignored. */
 	public static void main(final String[] args){
 		/* Minting a temporary key for the library demonstration. They should be minted in an enumeration or as class
 		 * constants in practice. Also, demonstrates a temporary key minted with a different value for different
@@ -178,7 +193,11 @@ public class JsonSimpleExample implements Jsonable{
 		final JsonKey missingKeyWithErrorValue = Jsoner.mintJsonKey(missingKeyWithDefault.getKey(), (byte)-1);
 		final JsonKey missingKeyWithMap = Jsoner.mintJsonKey(missingKeyWithDefault.getKey(), new JsonObject());
 		final JsonKey missingKeyWithCollection = Jsoner.mintJsonKey(missingKeyWithDefault.getKey(), new JsonArray());
-		/* All the variables for the example: */
+		/* jsonInput represents valid JSON.
+		 * carelessInput represents invalid JSON due to common typos but can be recovered from like missing a colon or
+		 * comma.
+		 * badInput represents invalid JSON that cannot be recovered from like vague boundaries of an object and array.
+		 * All the variables for the example: */
 		final JsonSimpleExample jsonable = new JsonSimpleExample();
 		final String jsonInput = "{\"required_key\":123,\"key\":[\"value0\",\"value1\",2,true]}";
 		final String carelessInput = "{\"required_key\"123,\"key\":[\"value0\" \"value1\" 2 true],}";
@@ -232,7 +251,8 @@ public class JsonSimpleExample implements Jsonable{
 		 * expected (like having object input when you wanted an array). */
 		deserializedObject = Jsoner.deserialize(jsonInput, new JsonObject());
 		deserializedArray = Jsoner.deserialize(jsonInput, new JsonArray());
-		/* Serialize things into proper JSON format no matter how it was input. */
+		/* Serialize things into proper JSON format no matter how it was input. Here you'll notice that the jsonInput
+		 * and carelessInput will have the same valid JSON result and the badJson will produce a null JSON output. */
 		jsonSerialized = Jsoner.serialize(jsonOutput);
 		carelessSerialized = Jsoner.serialize(carelessOutput);
 		badSerialized = Jsoner.serialize(badOutput);
@@ -259,7 +279,8 @@ public class JsonSimpleExample implements Jsonable{
 			caught.printStackTrace();
 		}
 		/* You also have some added functionality, like getting and casting in one call with type safety. Notice how the
-		 * 'required_key' value is an int. */
+		 * 'required_key' value is an int but can be retrieved as a String, whole number, or float format so you can use
+		 * the value in various but similar formats without changing its data type in the Java/JSON data structure. */
 		asString = deserializedObject.getString(requiredKey);
 		asInt = deserializedObject.getInteger(requiredKey);
 		asDouble = deserializedObject.getDouble(requiredKey);
@@ -267,11 +288,10 @@ public class JsonSimpleExample implements Jsonable{
 		 * something like the following: */
 		castFromMissingKey = deserializedObject.getString(missingKeyWithDefault);
 		/* castFromMissingKey is silently null just like a Map would return, but may indicate we're
-		 * working with data we're not expecting. */
-		/* However, objects can also get with defaults if something isn't there if you don't want to make it required
-		 * and
-		 * want to avoid nulls returned by missing keys (though a null could be returned if the key is explicitly set to
-		 * null). */
+		 * working with data we're not expecting.
+		 * However, objects can also get with defaults if something isn't there if you don't want to make it required
+		 * and want to avoid nulls returned by missing keys (though a null could be returned if the key is explicitly
+		 * set to null, just like a Map would). */
 		defaultedStringFromMissingKey = deserializedObject.getStringOrDefault(missingKeyWithDefault);
 		errorFromMissingKey = deserializedObject.getByteOrDefault(missingKeyWithErrorValue);
 		defaultedMapFromMissingKey = deserializedObject.getMapOrDefault(missingKeyWithMap);
@@ -319,6 +339,22 @@ public class JsonSimpleExample implements Jsonable{
 		System.out.println("default Collection value: " + defaultedCollectionFromMissingKey);
 	}
 
+	/** A standard getter for the field, but will be necessary to have at least protected status if the Jsonable is part
+	 * of an API that is expected to be extended and have fieldOne in its JSON.
+	 * @return a String that represents fieldOne as a proxy to a field the developer following this example is using. */
+	protected String getFieldOne(){
+		return this.fieldOne;
+	}
+
+	/** A standard getter for the field, but since it is package level and the field is private only classes that extend
+	 * JsonSimpleExample within the package will be able to produce a full JsonSimpleExample in JSON format. Thus
+	 * constructors taking the JSON format outside the package will have to accommodate the fact that fieldTwo isn't
+	 * available naturally.
+	 * @return an int that represents fieldTwo as a proxy to a field the developer following this example is using. */
+	int getFieldTwo(){
+		return this.fieldTwo;
+	}
+
 	@Override
 	public String toJson(){
 		final StringWriter writable = new StringWriter();
@@ -332,9 +368,10 @@ public class JsonSimpleExample implements Jsonable{
 
 	@Override
 	public void toJson(final Writer writable) throws IOException{
+		/* Since this example matches the JsonObject format we're just using the JsonObject's implementation. */
 		final JsonObject json = new JsonObject();
-		json.put(ExampleKeys.KEY_ONE.getKey(), this.fieldOne);
-		json.put(JsonSimpleExample.keyTwo.getKey(), this.fieldTwo);
+		json.put(ExampleKeys.KEY_ONE.getKey(), this.getFieldOne());
+		json.put(ExampleKeys.KEY_TWO.getKey(), this.getFieldTwo());
 		json.toJson(writable);
 	}
 
