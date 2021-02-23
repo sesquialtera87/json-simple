@@ -236,6 +236,7 @@ object Jsoner {
      * @see StringReader
      */
     @Throws(JsonException::class)
+    @JvmStatic
     fun deserialize(deserializable: String?): Any? {
         var returnable: Any?
         var readableDeserializable: StringReader? = null
@@ -261,6 +262,7 @@ object Jsoner {
      * represents deserializable.
      * @see Jsoner.deserialize
      */
+    @JvmStatic
     fun deserialize(deserializable: String?, defaultValue: JsonArray?): JsonArray? {
         var readable: StringReader? = null
         var returnable: JsonArray?
@@ -286,7 +288,8 @@ object Jsoner {
      * represents deserializable.
      * @see Jsoner.deserialize
      */
-    private fun deserialize(deserializable: String?, defaultValue: JsonObject?): JsonObject? {
+    @JvmStatic
+     fun deserialize(deserializable: String?, defaultValue: JsonObject?): JsonObject? {
         var readable: StringReader? = null
         var returnable: JsonObject?
         try {
@@ -325,6 +328,7 @@ object Jsoner {
      * JsonException: fix the deserializable to no longer have an unexpected token and try again.
      */
     @Throws(JsonException::class)
+    @JvmStatic
     fun deserializeMany(deserializable: Reader): JsonArray {
         return deserialize(
             deserializable,
@@ -404,6 +408,7 @@ object Jsoner {
      * @param value represents the value the JsonKey uses.
      * @return a JsonKey that represents the provided key and value.
      */
+    @JvmStatic
     fun mintJsonKey(key: String, value: Any): JsonKey {
         return object : JsonKey {
             override val key: String
@@ -499,6 +504,7 @@ object Jsoner {
      * @return printable except it will have '\n' then '\t' characters inserted after '[', '{', ',' and before ']' '}'
      * tokens in the JSON. It will return null if printable isn't a JSON string.
      */
+    @JvmStatic
     fun prettyPrint(printable: String?): String {
         val writer = StringWriter()
         try {
@@ -571,6 +577,7 @@ object Jsoner {
      * @throws IllegalArgumentException if the jsonSerializable isn't serializable in JSON.
      */
     @Throws(IOException::class)
+    @JvmStatic
     fun serialize(jsonSerializable: Any?, writableDestination: Writer) {
         serialize(jsonSerializable, writableDestination, EnumSet.of(SerializationOptions.ALLOW_JSONABLES))
     }
@@ -803,6 +810,7 @@ object Jsoner {
      * @throws IOException if the writableDestination encounters an I/O problem, like being closed while in use.
      */
     @Throws(IOException::class)
+    @JvmStatic
     fun serializeCarelessly(jsonSerializable: Any?, writableDestination: Writer) {
         serialize(
             jsonSerializable,
@@ -818,6 +826,7 @@ object Jsoner {
      * @throws IllegalArgumentException if the jsonSerializable isn't serializable in raw JSON.
      */
     @Throws(IOException::class)
+    @JvmStatic
     fun serializeStrictly(jsonSerializable: Any?, writableDestination: Writer) {
         serialize(jsonSerializable, writableDestination, EnumSet.noneOf(SerializationOptions::class.java))
     }

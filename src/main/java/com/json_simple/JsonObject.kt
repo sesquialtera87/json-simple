@@ -51,7 +51,7 @@ class JsonObject : HashMap<String?, Any?>, Jsonable {
      *
      * @since 2.3.0 to utilize JsonKey
      */
-    fun getBigDecimal(key: JsonKey): BigDecimal {
+    fun getBigDecimal(key: JsonKey): BigDecimal? {
         var returnable = this[key.key]
         if (returnable is BigDecimal) {
             /* Success there was a BigDecimal or it defaulted. */
@@ -62,7 +62,7 @@ class JsonObject : HashMap<String?, Any?>, Jsonable {
             /* A number can be used to construct a BigDecimal */
             returnable = BigDecimal(returnable as String?)
         }
-        return returnable as BigDecimal
+        return returnable as BigDecimal?
     }
 
     /** A convenience method that assumes there is a BigDecimal, Number, or String at the given key. If a Number is
@@ -80,7 +80,7 @@ class JsonObject : HashMap<String?, Any?>, Jsonable {
      *
      * @since 2.3.0 to utilize JsonKey
      */
-    fun getBigDecimalOrDefault(key: JsonKey): BigDecimal {
+    fun getBigDecimalOrDefault(key: JsonKey): BigDecimal? {
         var returnable: Any?
         returnable = if (this.containsKey(key.key)) {
             this[key.key]
@@ -101,7 +101,7 @@ class JsonObject : HashMap<String?, Any?>, Jsonable {
                 returnable = BigDecimal(returnable as String?)
             }
         }
-        return returnable as BigDecimal
+        return returnable as BigDecimal?
     }
 
     /** A convenience method that assumes there is a Boolean or String value at the given key.

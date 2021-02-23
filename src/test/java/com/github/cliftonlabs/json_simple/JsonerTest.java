@@ -6,6 +6,10 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.math.BigDecimal;
 
+import com.json_simple.JsonArray;
+import com.json_simple.JsonException;
+import com.json_simple.JsonObject;
+import com.json_simple.Jsoner;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -28,7 +32,7 @@ public class JsonerTest{
 	/** Ensures arrays are directly deserializable.
 	 * @throws JsonException if the test fails. */
 	@Test
-	public void testArrayDeserialization() throws JsonException{
+	public void testArrayDeserialization() throws JsonException {
 		JsonArray defaultValue;
 		Object deserialized;
 		/* Trailing commas are common causes of wasting time debugging JSON. Allowing it in deserialization will
@@ -187,7 +191,7 @@ public class JsonerTest{
 		final JsonException.Problems problem;
 		final Object unexpectedObject;
 		try{
-			throw new JsonException(0, JsonException.Problems.UNEXPECTED_CHARACTER, new Character('a'));
+			throw new JsonException(0, JsonException.Problems.UNEXPECTED_CHARACTER, 'a');
 		}catch(final JsonException caught){
 			position = caught.getPosition();
 			problem = caught.getProblemType();
@@ -195,7 +199,7 @@ public class JsonerTest{
 		}
 		Assert.assertEquals(0, position);
 		Assert.assertEquals(JsonException.Problems.UNEXPECTED_CHARACTER, problem);
-		Assert.assertEquals(new Character('a'), unexpectedObject);
+		Assert.assertEquals('a', unexpectedObject);
 	}
 
 	/** Ensures booleans, JsonArray, JsonObject, null, numbers, and Strings are deserializable while inside a JsonObject

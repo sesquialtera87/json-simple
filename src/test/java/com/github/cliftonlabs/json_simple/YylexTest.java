@@ -5,6 +5,9 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.math.BigDecimal;
 
+import com.json_simple.JsonException;
+import com.json_simple.Yylex;
+import com.json_simple.Yytoken;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -28,7 +31,7 @@ public class YylexTest{
 	 * @throws IOException if the test failed.
 	 * @throws JsonException if the test failed. */
 	@Test
-	public void testLexingConcatenatedJsonValues() throws IOException, JsonException{
+	public void testLexingConcatenatedJsonValues() throws IOException, JsonException {
 		StringReader lexable;
 		Yylex lexer;
 		Yytoken lexed;

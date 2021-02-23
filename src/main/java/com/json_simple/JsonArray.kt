@@ -13,7 +13,6 @@ package com.json_simple
 import java.math.BigDecimal
 import java.io.IOException
 import kotlin.Throws
-import com.github.cliftonlabs.json_simple.Jsoner
 import java.io.StringWriter
 import java.io.Writer
 
@@ -27,12 +26,12 @@ import java.io.Writer
  */
 class JsonArray : ArrayList<Any?>, Jsonable {
     /** Instantiates an empty JsonArray.  */
-    constructor() : super() {}
+    constructor() : super()
 
     /** Instantiate a new JsonArray using ArrayList's constructor of the same type.
      * @param collection represents the elements to produce the JsonArray with.
      */
-    constructor(collection: Collection<*>?) : super(collection) {}
+    constructor(collection: Collection<*>?) : super(collection)
 
     /** Calls add for the given collection of elements, but returns the JsonArray for chaining calls.
      * @param collection represents the items to be appended to the JsonArray.
@@ -106,7 +105,7 @@ class JsonArray : ArrayList<Any?>, Jsonable {
      *
      * @see Number.toDouble
      */
-    fun getBigDecimal(index: Int): BigDecimal {
+    fun getBigDecimal(index: Int): BigDecimal? {
         var returnable = this[index]
         if (returnable is BigDecimal) {
             /* Success there was a BigDecimal. */
@@ -117,7 +116,7 @@ class JsonArray : ArrayList<Any?>, Jsonable {
             /* A number can be used to construct a BigDecimal. */
             returnable = BigDecimal(returnable as String?)
         }
-        return returnable as BigDecimal
+        return returnable as BigDecimal?
     }
 
     /** A convenience method that assumes there is a Boolean or String value at the given index.
@@ -126,12 +125,12 @@ class JsonArray : ArrayList<Any?>, Jsonable {
      * @throws ClassCastException if there was a value but didn't match the assumed return type.
      * @throws IndexOutOfBoundsException if the index is outside of the range of element indexes in the JsonArray.
      */
-    fun getBoolean(index: Int): Boolean {
+    fun getBoolean(index: Int): Boolean? {
         var returnable = this[index]
         if (returnable is String) {
             returnable = java.lang.Boolean.valueOf(returnable as String?)
         }
-        return returnable as Boolean
+        return returnable as Boolean?
     }
 
     /** A convenience method that assumes there is a Number or String value at the given index.

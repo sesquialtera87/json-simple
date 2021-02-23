@@ -11,6 +11,11 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
+import com.json_simple.JsonArray;
+import com.json_simple.JsonKey;
+import com.json_simple.JsonObject;
+import com.json_simple.Jsoner;
+import org.jetbrains.annotations.NotNull;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -18,14 +23,12 @@ import org.junit.Test;
 
 /** Ensures that JsonObject hasn't regressed in functionality or breaks its API contract. */
 public class JsonObjectTest{
-	@SuppressWarnings("javadoc")
 	private enum TestEnums{
 		A,
 		B;
 	}
 
-	@SuppressWarnings("javadoc")
-	private static enum TestKeys implements JsonKey{
+	private static enum TestKeys implements JsonKey {
 		DNE(null),
 		DNE_BIG_DECIMAL(new BigDecimal("101")),
 		DNE_COLLECTION(new JsonArray()),
@@ -43,7 +46,7 @@ public class JsonObjectTest{
 		key8(null);
 		private final Object value;
 
-		private TestKeys(final Object value){
+		TestKeys(final Object value){
 			this.value = value;
 		}
 
@@ -52,6 +55,7 @@ public class JsonObjectTest{
 			return this.name();
 		}
 
+		@NotNull
 		@Override
 		public Object getValue(){
 			return this.value;
@@ -93,12 +97,12 @@ public class JsonObjectTest{
 	public void testGetBigDecimal(){
 		final JsonObject json = new JsonObject();
 		json.put(TestKeys.key0, new BigDecimal("0"));
-		json.put(TestKeys.key1, Double.valueOf(0));
-		json.put(TestKeys.key2, Float.valueOf(0));
-		json.put(TestKeys.key3, Long.valueOf(0));
-		json.put(TestKeys.key4, Integer.valueOf(0));
-		json.put(TestKeys.key5, Short.valueOf((short)0));
-		json.put(TestKeys.key6, Byte.valueOf((byte)0));
+		json.put(TestKeys.key1, (double) 0);
+		json.put(TestKeys.key2, (float) 0);
+		json.put(TestKeys.key3, 0L);
+		json.put(TestKeys.key4, 0);
+		json.put(TestKeys.key5, (short) 0);
+		json.put(TestKeys.key6, (byte) 0);
 		json.put(TestKeys.key7, new String("0"));
 		Assert.assertEquals(new BigDecimal("0"), json.getBigDecimal(TestKeys.key0));
 		Assert.assertEquals(new BigDecimal("0.0"), json.getBigDecimal(TestKeys.key1));

@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.json_simple.JsonArray;
+import com.json_simple.JsonObject;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -179,7 +181,7 @@ public class JsonArrayTest{
 		Assert.assertTrue(output0.containsValue(0));
 		Assert.assertTrue(output0.containsValue(1));
 		Assert.assertTrue(output0.containsValue(2));
-		output1 = json.<JsonObject> getMap(1);
+		output1 = json.getMap(1);
 		Assert.assertTrue(output1.containsKey("key3"));
 		Assert.assertTrue(output1.containsKey("key4"));
 		Assert.assertTrue(output1.containsKey("key5"));
